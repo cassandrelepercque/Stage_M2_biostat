@@ -1,6 +1,8 @@
 ###############################################################################
 #                             PACKAGES UTILES                                 #
 ###############################################################################
+rm(list=ls(all=TRUE))
+setwd("C:/Users/Cassandre/Documents/Stage/Stage/Transfert_APAD_IDESP_2021")
 
 library(dplyr)
 library(ggplot2)
@@ -13,6 +15,62 @@ library(gridExtra)
 library(splines)
 library(lmtest)
 library(car)
+source("C:/Users/Cassandre/Documents/Stage/Documents_stage_en_plus/Code_mois.R")
+
+#--TABLE
+Data <- read.csv("QLQC30_score.csv", header = T, sep = ";")
+df <- subset(Data, select = -c(q1:q30))
+df <- df %>% relocate(QL2, .after = qsdtcd1)
+
+#--PARTICIPANTES
+N <- length(unique(df$npat)) #nbr de patientes ITT
+N_inclusion <- length(filter(df, visit==0)$npat) #nbr de patientes à l'inclusion
+
+npat_ITT <- unique(df$npat) #nbr de patientes ITT
+npat_mITT<- filter(df, visit==0)$npat
+which(!npat_ITT %in% npat_mITT) #patiente qui n'est pas à l'inclusion (62)
+###############################################################################
+#                         CALCUL VRAIES DATES (mois)                          #
+###############################################################################
+df$qsdtcd1 <- as.Date(df$qsdtcd1, format = "%d/%m/%Y")
+#--Patiente 62
+npat_62 <- data.frame(matrix("",1,19))
+npat_62 <- data.frame(npat=c(62), BRAS=c(0), visit=c(0), 
+                      qsdtcd1=as.Date("2012-03-21"), QL2=c(NA), PF2=c(NA),
+                      RF2=c(NA), EF=c(NA), CF=c(NA), SF=c(NA), FA=c(NA), 
+                      NV=c(NA), PA=c(NA), DY=c(NA), SL=c(NA), AP=c(NA), 
+                      CO=c(NA), DI=c(NA), FI=c(NA))
+npat_62 <- rbind(npat_62, filter(df, npat=="62"))
+time_p62 <- npat_62 %>% group_by(npat) %>% 
+  mutate(LagDate = qsdtcd1[visit=="0"], #conversion en mois:
+         Time = as.numeric((difftime(qsdtcd1, LagDate, units="days"))/30.4375))
+
+#--Toutes les autres patientes
+tps <- df[-287,]
+which(is.na(tps$qsdtcd1)) #val: 253 / 308 / 481 / 485 / 658
+tps$qsdtcd1[253] <- as.Date("2012-05-24") #date trouvée fichier VS excel
+tps$qsdtcd1[308] <- as.Date("2013-10-21") #date trouvée fichier VS excel
+tps$qsdtcd1[481] <- as.Date("2014-04-07") #date trouvée fichier VS excel
+tps$qsdtcd1[485] <- as.Date("2014-04-16") #date trouvée fichier VS excel 
+tps$qsdtcd1[658] <- as.Date("2014-11-10") #date trouvée fichier VS excel
+which(is.na(tps$qsdtcd1)) #verifier qu'il n'y a plus de NA
+
+temps <- tps %>% group_by(npat) %>% 
+  mutate(LagDate = qsdtcd1[visit=="0"],  #conversion en mois:
+         Time = as.numeric((difftime(qsdtcd1, LagDate, units="days"))/30.4375))
+
+#--tableau total----------------------------------------------
+df_tpreel <- bind_rows(temps, time_p62)
+df_tpreel <- df_tpreel[order(df_tpreel$npat),]
+df_tpreel <- df_tpreel[-287,] #enleve la ligne creee pour pat 62 (inclusion)
+df_tpreel <- df_tpreel %>% relocate(LagDate, .after = qsdtcd1)
+df_tpreel <- df_tpreel %>% relocate(Time, .after = LagDate)
+df_tpreel <- as.data.frame(df_tpreel)
+df_tpreel[,"BRAS"] <- as.factor(df_tpreel$BRAS)
+
+# write.table(df_tpreel, file = "tableau_donnees_mois.csv", sep = ";",
+#             dec = ",", row.names = FALSE)
+
 
 ###############################################################################
 #                           LCMM                                              #
@@ -25,7 +83,7 @@ library(car)
 #---Trajectoires linéaires + lien linéaire-------------------------------------
 lien <- "linear" #choix de la fonction de lien pour la transformation
 QL2_lin_lin <- lcmm(QL2 ~ Time + Time:BRAS, random = ~ Time, subject = "npat",
-                    data = df_tpreel, link = lien)
+                   data = df_tpreel, link = lien)
 #on ne garde que les colonnes du tableau initial qui nous intéressent
 df_QL2_ll <- subset(df_tpreel, select =-c(visit:LagDate, PF2:FI))
 #on retire les lignes avec des NA:
@@ -38,7 +96,7 @@ df_QL2_ll <- df_QL2_ll[order(df_QL2_ll$Time), ] #ordonner par les temps
 ### Partie Graphique ##########################################################
 #Graphe dans l'échelle du lcmm
 QL2_ll_p <- ggplot(df_QL2_ll, 
-                   aes(x=Time, y=score_transf_QL2_lin, group = BRAS)) + 
+                  aes(x=Time, y=score_transf_QL2_lin, group = BRAS)) + 
   geom_line(aes(color=BRAS)) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score transformé", limits = c(-2,10))+
@@ -84,10 +142,10 @@ df_QL2_lcmm <- cbind(df_QL2_lcmm, pred_marg_transform$pred)
 names(df_QL2_lcmm)[ncol(df_QL2_lcmm)] <- "QL2_lcmm.fitted"
 
 pQL2_lcmm <- ggplot(data = df_QL2_lmm, aes(x=Time, QL2_lmm.fitted, 
-                                           group = BRAS)) +
+                                         group = BRAS)) +
   geom_line(aes(color=BRAS))+
   geom_line(data = df_QL2_lcmm,aes(x=Time, y=QL2_lcmm.fitted, 
-                                   group = BRAS, color=BRAS),
+                                  group = BRAS, color=BRAS),
             linetype = "longdash", size = 1) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score moyen prédit (%)", limits = c(40,80))+
@@ -143,9 +201,9 @@ qqPlot(resid_transform, envelope = .95, id=FALSE,
 
 #Résidu prédit vs modèle prédit
 QL2_lmm_res <- plot(model_initial_QL2_spl,
-                    main="Graphique des résidus (LCMM): \n Statut global de santé")
+                   main="Graphique des résidus (LCMM): \n Statut global de santé")
 QL2_lcmm_res <- plot(model_transform_QL2_spl,
-                     main="Graphique des résidus (LMM): \n Statut global de santé")
+                    main="Graphique des résidus (LMM): \n Statut global de santé")
 grid.arrange(QL2_lmm_res, QL2_lcmm_res)
 
 
@@ -153,7 +211,7 @@ grid.arrange(QL2_lmm_res, QL2_lcmm_res)
 #--Trajectoires lineaires + lien spline----------------------------------------
 lien <- "splines"
 QL2_lin_spl <- lcmm(QL2 ~ Time + Time:BRAS, random = ~ Time, subject = "npat",
-                    data = df_tpreel, link = lien)
+                   data = df_tpreel, link = lien)
 #on ne garde que les colonnes du tableau initial qui nous intéressent
 df_QL2_ls <- subset(df_tpreel, select =-c(visit:LagDate, PF2:FI))
 #on retire les lignes avec des NA:
@@ -166,7 +224,7 @@ df_QL2_ls <- df_QL2_ls[order(df_QL2_ls$Time), ] # ordonner par les temps
 ### Partie Graphique ##########################################################
 #Graphe dans l'échelle du lcmm
 QL2_ls_p <- ggplot(df_QL2_ls, aes(x=Time, y=score_transf_QL2_lin_spl, 
-                                  group = BRAS)) + geom_line(aes(color=BRAS)) +
+                                group = BRAS)) + geom_line(aes(color=BRAS)) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score transformé", limits = c(-2,10))+
   scale_color_manual(labels = c("Contrôle", "APAD"), values = c("red", "blue")) +
@@ -211,10 +269,10 @@ df_QL2_lcmm_ls <- cbind(df_QL2_lcmm_ls, pred_marg_transform$pred)
 names(df_QL2_lcmm_ls)[ncol(df_QL2_lcmm_ls)] <- "QL2_lcmm_ls.fitted"
 
 pQL2_lcmm_ls <- ggplot(data = df_QL2_lmm, aes(x=Time, QL2_lmm.fitted, 
-                                              group = BRAS)) +
+                                            group = BRAS)) +
   geom_line(aes(color=BRAS))+
   geom_line(data = df_QL2_lcmm_ls,aes(x=Time, y=QL2_lcmm_ls.fitted, 
-                                      group = BRAS, color=BRAS),
+                                     group = BRAS, color=BRAS),
             linetype = "longdash", size = 1) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score moyen prédit (%)", limits = c(60,80))+
@@ -269,9 +327,9 @@ qqPlot(resid_transform, envelope = .95, id=FALSE,
 
 #Résidu prédit vs modèle prédit
 QL2_lmm_res <- plot(fit.lme.QL2,
-                    main="Graphique des résidus (LCMM): \n Statut global de santé")
+                   main="Graphique des résidus (LCMM): \n Statut global de santé")
 QL2_lcmm_res <- plot(QL2_lin_spl,
-                     main="Graphique des résidus (LMM): \n Statut global de santé")
+                    main="Graphique des résidus (LMM): \n Statut global de santé")
 grid.arrange(QL2_lmm_res, QL2_lcmm_res)
 
 
@@ -280,7 +338,7 @@ lien <- "splines"
 #retirer les NA s'il y en a:
 df_QL2_lcmm_spl <- df_tpreel[which(!is.na(df_tpreel$QL2)),]
 QL2_spl_spl <- lcmm(fixed = QL2 ~ ns(Time,3):BRAS, random = ~ 1 + Time,
-                    subject = "npat",data=df_tpreel, link = lien)
+                   subject = "npat",data=df_tpreel, link = lien)
 #on ne garde que les colonnes du tableau initial qui nous intéressent
 df_QL2_ss <- subset(df_tpreel, select =-c(visit:LagDate, PF2:FI))
 #on retire les lignes avec des NA:
@@ -293,7 +351,7 @@ df_QL2_ss <- df_QL2_ss[order(df_QL2_ss$Time), ] # ordonner par les temps
 ### Partie Graphique ##########################################################
 #Graphe dans l'échelle du lcmm
 QL2_ss_p <- ggplot(df_QL2_ss, aes(x=Time, y=score_transf_QL2_spl, 
-                                  group = BRAS)) + 
+                                group = BRAS)) + 
   geom_line(aes(color=BRAS)) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score transformé", limits = c(-2,10))+
@@ -336,10 +394,10 @@ df_QL2_lcmm_spl <- cbind(df_QL2_lcmm_spl, pred_marg_transform$pred)
 names(df_QL2_lcmm_spl)[ncol(df_QL2_lcmm_spl)] <- "QL2_lcmm_spl.fitted"
 
 pQL2_lcmm_spl <- ggplot(data = df_QL2_spl, aes(x=Time, y=QL2_spl.fitted, 
-                                               group = BRAS)) +
+                                             group = BRAS)) +
   geom_line(aes(color=BRAS))+
   geom_line(data = df_QL2_lcmm_spl,aes(x=Time, y=QL2_lcmm_spl.fitted, 
-                                       group = BRAS, color=BRAS),
+                                      group = BRAS, color=BRAS),
             linetype = "longdash", size = 1) +
   scale_x_continuous(name = "Temps (mois)", limits = c(0,30))+
   scale_y_continuous(name = "Score moyen prédit (%)", limits = c(40,80))+
@@ -395,9 +453,9 @@ qqPlot(resid_transform, envelope = .95, id=FALSE,
 
 #Résidu prédit vs modèle prédit
 QL2_lmm_res <- plot(fit.lme.ns.QL2.2,
-                    main="Graphique des résidus (LCMM): \n Statut global de santé")
+                   main="Graphique des résidus (LCMM): \n Statut global de santé")
 QL2_lcmm_res <- plot(QL2_spl_spl,
-                     main="Graphique des résidus (LMM): \n Statut global de santé")
+                    main="Graphique des résidus (LMM): \n Statut global de santé")
 grid.arrange(QL2_lmm_res, QL2_lcmm_res)
 
 
