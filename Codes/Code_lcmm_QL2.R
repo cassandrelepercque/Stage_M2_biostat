@@ -1,8 +1,6 @@
 ###############################################################################
 #                             PACKAGES UTILES                                 #
 ###############################################################################
-rm(list=ls(all=TRUE))
-setwd("C:/Users/Cassandre/Documents/Stage/Stage/Transfert_APAD_IDESP_2021")
 
 library(dplyr)
 library(ggplot2)
@@ -15,62 +13,6 @@ library(gridExtra)
 library(splines)
 library(lmtest)
 library(car)
-source("C:/Users/Cassandre/Documents/Stage/Documents_stage_en_plus/Code_mois.R")
-
-#--TABLE
-Data <- read.csv("QLQC30_score.csv", header = T, sep = ";")
-df <- subset(Data, select = -c(q1:q30))
-df <- df %>% relocate(QL2, .after = qsdtcd1)
-
-#--PARTICIPANTES
-N <- length(unique(df$npat)) #nbr de patientes ITT
-N_inclusion <- length(filter(df, visit==0)$npat) #nbr de patientes à l'inclusion
-
-npat_ITT <- unique(df$npat) #nbr de patientes ITT
-npat_mITT<- filter(df, visit==0)$npat
-which(!npat_ITT %in% npat_mITT) #patiente qui n'est pas à l'inclusion (62)
-###############################################################################
-#                         CALCUL VRAIES DATES (mois)                          #
-###############################################################################
-df$qsdtcd1 <- as.Date(df$qsdtcd1, format = "%d/%m/%Y")
-#--Patiente 62
-npat_62 <- data.frame(matrix("",1,19))
-npat_62 <- data.frame(npat=c(62), BRAS=c(0), visit=c(0), 
-                      qsdtcd1=as.Date("2012-03-21"), QL2=c(NA), PF2=c(NA),
-                      RF2=c(NA), EF=c(NA), CF=c(NA), SF=c(NA), FA=c(NA), 
-                      NV=c(NA), PA=c(NA), DY=c(NA), SL=c(NA), AP=c(NA), 
-                      CO=c(NA), DI=c(NA), FI=c(NA))
-npat_62 <- rbind(npat_62, filter(df, npat=="62"))
-time_p62 <- npat_62 %>% group_by(npat) %>% 
-  mutate(LagDate = qsdtcd1[visit=="0"], #conversion en mois:
-         Time = as.numeric((difftime(qsdtcd1, LagDate, units="days"))/30.4375))
-
-#--Toutes les autres patientes
-tps <- df[-287,]
-which(is.na(tps$qsdtcd1)) #val: 253 / 308 / 481 / 485 / 658
-tps$qsdtcd1[253] <- as.Date("2012-05-24") #date trouvée fichier VS excel
-tps$qsdtcd1[308] <- as.Date("2013-10-21") #date trouvée fichier VS excel
-tps$qsdtcd1[481] <- as.Date("2014-04-07") #date trouvée fichier VS excel
-tps$qsdtcd1[485] <- as.Date("2014-04-16") #date trouvée fichier VS excel 
-tps$qsdtcd1[658] <- as.Date("2014-11-10") #date trouvée fichier VS excel
-which(is.na(tps$qsdtcd1)) #verifier qu'il n'y a plus de NA
-
-temps <- tps %>% group_by(npat) %>% 
-  mutate(LagDate = qsdtcd1[visit=="0"],  #conversion en mois:
-         Time = as.numeric((difftime(qsdtcd1, LagDate, units="days"))/30.4375))
-
-#--tableau total----------------------------------------------
-df_tpreel <- bind_rows(temps, time_p62)
-df_tpreel <- df_tpreel[order(df_tpreel$npat),]
-df_tpreel <- df_tpreel[-287,] #enleve la ligne creee pour pat 62 (inclusion)
-df_tpreel <- df_tpreel %>% relocate(LagDate, .after = qsdtcd1)
-df_tpreel <- df_tpreel %>% relocate(Time, .after = LagDate)
-df_tpreel <- as.data.frame(df_tpreel)
-df_tpreel[,"BRAS"] <- as.factor(df_tpreel$BRAS)
-
-# write.table(df_tpreel, file = "tableau_donnees_mois.csv", sep = ";",
-#             dec = ",", row.names = FALSE)
-
 
 ###############################################################################
 #                           LCMM                                              #

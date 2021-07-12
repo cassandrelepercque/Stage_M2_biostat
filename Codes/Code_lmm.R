@@ -625,16 +625,16 @@ fit.lme.ns.QL2.1 <- lme(QL2 ~ ns(Time,3),
                         random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                         #matrice de variance covariance des effets aleatoires diagonale
                         data=df_QL2_spl, na.action = na.omit,
-                        control = lmeControl(opt="optim")) #sans interaction
+                        control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.QL2.2 <- lme(QL2 ~ ns(Time,3):BRAS, 
                         random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                         #matrice de variance covariance des effets aleatoires diagonale
                         data=df_QL2_spl, na.action = na.omit,
-                        control = lmeControl(opt="optim")) #avec interaction
+                        control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.QL2.1, fit.lme.ns.QL2.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.QL2.1.ml <- update(fit.lme.ns.QL2.1, method="ML")
@@ -719,16 +719,16 @@ fit.lme.ns.PF.1 <- lme(PF2 ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_PF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.PF.2 <- lme(PF2 ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_PF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.PF.1, fit.lme.ns.PF.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif du bras
 
 #Tester les modeles
 fit.lme.ns.PF.1.ml <- update(fit.lme.ns.PF.1, method="ML")
@@ -813,16 +813,16 @@ fit.lme.ns.RF.1 <- lme(RF2 ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))), 
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_RF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.RF.2 <- lme(RF2 ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_RF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.RF.1, fit.lme.ns.RF.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.RF.1.ml <- update(fit.lme.ns.RF.1, method="ML")
@@ -905,16 +905,16 @@ fit.lme.ns.SF.1 <- lme(SF ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_SF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.SF.2 <- lme(SF ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_SF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.SF.1, fit.lme.ns.SF.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.SF.1.ml <- update(fit.lme.ns.SF.1, method="ML")
@@ -997,16 +997,16 @@ fit.lme.ns.EF.1 <- lme(EF ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_EF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.EF.2 <- lme(EF ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_EF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.EF.1, fit.lme.ns.EF.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.EF.1.ml <- update(fit.lme.ns.EF.1, method="ML")
@@ -1086,16 +1086,16 @@ fit.lme.ns.CF.1 <- lme(CF ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_CF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.CF.2 <- lme(CF ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_CF_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.CF.1, fit.lme.ns.CF.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.CF.1.ml <- update(fit.lme.ns.CF.1, method="ML")
@@ -1176,16 +1176,16 @@ fit.lme.ns.FA.1 <- lme(FA ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_FA_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.FA.2 <- lme(FA ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_FA_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.FA.1, fit.lme.ns.FA.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.FA.1.ml <- update(fit.lme.ns.FA.1, method="ML")
@@ -1265,16 +1265,16 @@ fit.lme.ns.NV.1 <- lme(NV ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_NV_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.NV.2 <- lme(NV ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_NV_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.NV.1, fit.lme.ns.NV.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.NV.1.ml <- update(fit.lme.ns.NV.1, method="ML")
@@ -1354,16 +1354,16 @@ fit.lme.ns.PA.1 <- lme(PA ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_PA_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.PA.2 <- lme(PA ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_PA_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.PA.1, fit.lme.ns.PA.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.PA.1.ml <- update(fit.lme.ns.PA.1, method="ML")
@@ -1443,16 +1443,16 @@ fit.lme.ns.DY.1 <- lme(DY ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_DY_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.DY.2 <- lme(DY ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_DY_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.DY.1, fit.lme.ns.DY.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.DY.1.ml <- update(fit.lme.ns.DY.1, method="ML")
@@ -1532,16 +1532,16 @@ fit.lme.ns.SL.1 <- lme(SL ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_SL_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.SL.2 <- lme(SL ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_SL_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.SL.1, fit.lme.ns.SL.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.SL.1.ml <- update(fit.lme.ns.SL.1, method="ML")
@@ -1621,16 +1621,16 @@ fit.lme.ns.AP.1 <- lme(AP ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_AP_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.AP.2 <- lme(AP ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_AP_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.AP.1, fit.lme.ns.AP.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.AP.1.ml <- update(fit.lme.ns.AP.1, method="ML")
@@ -1710,16 +1710,16 @@ fit.lme.ns.CO.1 <- lme(CO ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_CO_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.CO.2 <- lme(CO ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_CO_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.CO.1, fit.lme.ns.CO.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.CO.1.ml <- update(fit.lme.ns.CO.1, method="ML")
@@ -1799,16 +1799,16 @@ fit.lme.ns.DI.1 <- lme(DI ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_DI_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.DI.2 <- lme(DI ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_DI_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.DI.1, fit.lme.ns.DI.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.DI.1.ml <- update(fit.lme.ns.DI.1, method="ML")
@@ -1888,16 +1888,16 @@ fit.lme.ns.FI.1 <- lme(FI ~ ns(Time,3),
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_FI_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #sans interaction
+                       control = lmeControl(opt="optim")) #sans effet bras
 
 fit.lme.ns.FI.2 <- lme(FI ~ ns(Time,3):BRAS, 
                        random = list(npat = pdDiag(form = ~ ns(Time, 3))),
                        #matrice de variance covariance des effets aleatoires diagonale
                        data=df_FI_spl, na.action = na.omit,
-                       control = lmeControl(opt="optim")) #avec interaction
+                       control = lmeControl(opt="optim")) #avec effet bras
 
 lrtest(fit.lme.ns.FI.1, fit.lme.ns.FI.2)
-#p-value tres petite = effet significatif de l'interaction
+#p-value tres petite = effet significatif de l'effet bras
 
 #Tester les modeles
 fit.lme.ns.FI.1.ml <- update(fit.lme.ns.FI.1, method="ML")
